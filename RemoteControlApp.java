@@ -1,7 +1,8 @@
 /**
- * ACS-3913 Assignment 4
+ * Write a description of class CeilingFan here.
+ * Sehaj Mundi
+ * 3117464
  */
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -11,29 +12,59 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
+import java.io.*;
 public class RemoteControlApp extends Application{
     private Label[] labels;                             
     RemoteControl remoteControl;
 
     /** Loads and sets up the remote control */
     public void loadRemote(){
-        Light kitchenLight = new Light("Kitchen");
+        Light LivingRoomLight = new Light("Living Room");
         Stereo stereo = new Stereo("Living Room");
+        Hottub hottub = new Hottub();
+        CeilingFan ceilingFan = new CeilingFan("Bed Room");
 
-        LightOnCommand kitchenLightOn = 
-            new LightOnCommand(kitchenLight);
-        LightOffCommand kitchenLightOff = 
-            new LightOffCommand(kitchenLight);
+        LightOnCommand LivingRoomLightOn = 
+            new LightOnCommand(LivingRoomLight);
+        LightOffCommand LivingRoomLightOff = 
+            new LightOffCommand(LivingRoomLight);
 
         StereoOnWithCDCommand stereoOnWithCD =
             new StereoOnWithCDCommand(stereo);
         StereoOffCommand  stereoOff =
             new StereoOffCommand(stereo);
-
-        setRemoteCommand(0, kitchenLightOn, kitchenLightOff, "Kitchen Light");
-        setRemoteCommand(1, stereoOnWithCD, stereoOff, "Stereo");
-
+            
+        HottubOnCommand hottubOn = new HottubOnCommand(hottub);
+        HottubOffCommand hottubOff = new HottubOffCommand(hottub);    
+        
+        CeilingFanHighCommand high = new CeilingFanHighCommand(ceilingFan);
+        CeilingFanMediumCommand medium = new CeilingFanMediumCommand(ceilingFan);
+        CeilingFanLowCommand low = new CeilingFanLowCommand(ceilingFan);
+        CeilingFanOffCommand off = new CeilingFanOffCommand(ceilingFan);
+        
+        StereoOnWithRadioCommand stereoOnWithRadio =
+            new StereoOnWithRadioCommand(stereo);
+        StereoOffCommand  stereoOffWithRadio =
+            new StereoOffCommand(stereo);
+            
+        StereoOnWithCDCommand stereoOnWithCDLoud =
+            new StereoOnWithCDCommand(stereo);
+        StereoOffCommand  stereoOffLoud =
+            new StereoOffCommand(stereo);    
+        
+        Command[] partyOn = {LivingRoomLightOn, stereoOnWithCD, low};
+        Command[] partyOff = {LivingRoomLightOff, stereoOff, low};
+        
+        MacroCommand partyOnMacro = new MacroCommand(partyOn);
+        MacroCommand partyOffMacro = new MacroCommand(partyOff);
+        
+        setRemoteCommand(0, LivingRoomLightOn, LivingRoomLightOff, "Living Room Light");
+        setRemoteCommand(1, stereoOnWithRadio, stereoOffWithRadio, "Stereo With Radio");
+        setRemoteCommand(2, stereoOnWithCD, stereoOff, "Stereo With CD");
+        setRemoteCommand(3, medium, off, "Ceiling Fan Medium");
+        setRemoteCommand(4, low, off, "Ceiling Fan Low");
+        setRemoteCommand(5, partyOnMacro, partyOffMacro, "Work Mode");
+        
         System.out.println("\n------ Remote Control App Sim -------\n");
     }
 
@@ -45,9 +76,10 @@ public class RemoteControlApp extends Application{
     }
 
     /** The main entry point for the application **/
-    public void start(Stage stage) {          
-        final int NUM_COMMANDS = 7;
-        final int REMOTE_HEIGHT = 400;
+    public void start(Stage stage) throws FileNotFoundException,IOException {     
+        Configuration config = new Configuration();
+        final int NUM_COMMANDS = config.getNumberOfOptions();
+        final int REMOTE_HEIGHT = config.getHeight();
         final int REMOTE_WIDTH = 250;
 
         remoteControl = new RemoteControl();
@@ -77,13 +109,15 @@ public class RemoteControlApp extends Application{
         // Set actions on the buttons using lambda expressions
         for (int i=0; i<NUM_COMMANDS; i++){
             final int I = i;
+            
             onButtons[i].setOnAction((ActionEvent event) -> {
                     remoteControl.onButtonWasPushed(I);
                 });
             offButtons[i].setOnAction((ActionEvent event) -> {
                     remoteControl.offButtonWasPushed(I);
-                });
-        }
+                });}
+                
+        
 
         // Set actions on the buttons using method reference
         undoButton.setOnAction(this::undoButtonClick);
@@ -113,16 +147,23 @@ public class RemoteControlApp extends Application{
 
         // Load the remote
         loadRemote();
+    
     }
-
     /** Executes when the undoButton is clicked */
     private void undoButtonClick(ActionEvent event){
         // enter code here...
+        
+        remoteControl.undoButtonWasPushed();
+        
     }
 
     /** Executes when the redoButton is clicked */
     private void redoButtonClick(ActionEvent event){
         // enter code here...
+        
+        remoteControl.redoButtonWasPushed();
+    
+    
     }
 
     /** Executes when the application stops */

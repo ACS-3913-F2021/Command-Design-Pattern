@@ -1,5 +1,8 @@
-/** From Head First Design Patterns, Freeman & Robson et al. */  
-
+/**
+ * Write a description of class CeilingFan here.
+ * Sehaj Mundi
+ * 3117464
+ */
 public class LightOnCommand extends Command {
     private Light light;
 
@@ -9,5 +12,10 @@ public class LightOnCommand extends Command {
 
     public void execute() {
         light.on();
+    }
+    
+    public void undo()
+    {
+        light.off();
     }
 }
