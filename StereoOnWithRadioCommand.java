@@ -3,19 +3,21 @@
  * Sehaj Mundi
  * 3117464
  */
-public class StereoOffCommand extends Command {
+public class StereoOnWithRadioCommand extends Command {
     private Stereo stereo;
 
-    public StereoOffCommand(Stereo stereo) {
+    public StereoOnWithRadioCommand(Stereo stereo) {
         this.stereo = stereo;
     }
 
     public void execute() {
-        stereo.off();
+        stereo.on();
+        stereo.setRadio();
+        stereo.setVolume(6);
     }
     
     public void undo()
     {
-        stereo.on();
+        stereo.off();
     }
 }

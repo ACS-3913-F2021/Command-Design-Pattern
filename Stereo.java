@@ -1,5 +1,9 @@
 /** From Head First Design Patterns, Freeman & Robson et al. */ 
-
+/**
+ * Write a description of class CeilingFan here.
+ * Sehaj Mundi
+ * 3117464
+ */
 public class Stereo {
     private String location;
 

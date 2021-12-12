@@ -1,10 +1,17 @@
-/** From Head First Design Patterns, Freeman & Robson et al. */  
-
+/**
+ * Write a description of class CeilingFan here.
+ * Sehaj Mundi
+ * 3117464
+ */
+import java.util.*;
+import java.io.*;
 public class RemoteControl {
     private Command[] onCommands;
     private Command[] offCommands;
-
-    public RemoteControl() {
+    private Stack<Command> undo = new Stack<>(); 
+    private Stack<Command> redo = new Stack<>();
+    public RemoteControl() 
+    {
         onCommands = new Command[7];
         offCommands = new Command[7];
 
@@ -15,17 +22,62 @@ public class RemoteControl {
         }
     }
 
-    public void setCommand(int slot, Command onCommand, Command offCommand) {
+    public void setCommand(int slot, Command onCommand, Command offCommand) 
+    {
         onCommands[slot] = onCommand;
         offCommands[slot] = offCommand;
     }
 
-    public void onButtonWasPushed(int slot) {
-        onCommands[slot].execute();
+    public void onButtonWasPushed(int slot)  
+    {
+        try
+        {
+            onCommands[slot].executeWithLog();
+            undo.push((Command)onCommands[slot]);
+        }
+        catch(IOException e){}
+
     }
 
-    public void offButtonWasPushed(int slot) {
-        offCommands[slot].execute();
+    public void offButtonWasPushed(int slot)  
+    {
+        try
+        {
+            offCommands[slot].executeWithLog();
+            undo.push((Command)offCommands[slot]);
+        }
+        catch(IOException e) {}
+    }
+
+    public void undoButtonWasPushed() 
+    {
+        if (undo.empty()) 
+        {
+            return;
+        }
+        Command undoCommand = undo.pop();
+        try
+        {
+            undoCommand.undoWithLog();
+        }
+        catch(IOException e){}
+        redo.push(undoCommand);
+    }
+
+    public void redoButtonWasPushed() 
+    {
+        if (redo.empty())
+        {
+            return;
+        }
+        Command redoCommand = redo.pop();
+
+        try
+        {
+            redoCommand.executeWithLog();
+        }
+        catch(IOException e){}
+        undo.push(redoCommand);
     }
 
     /* for debugging / testing */
